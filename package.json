@@ -1,0 +1,19 @@
+{
+  "name": "grievance-management-system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node blockchain/server.js",
+    "server": "php -S localhost:8000 -t public",
+    "dev": "node blockchain/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "crypto-js": "^4.2.0",
+    "express": "^5.2.1"
+  }
+}
