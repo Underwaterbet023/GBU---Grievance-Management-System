@@ -42,16 +42,55 @@ ON DUPLICATE KEY UPDATE
 -- Add a nullable FK-compatible hostel_id to support gradual migration.
 -- Do not drop or rename the existing grievances.hostel text column: older
 -- pages and historical records may still rely on it.
-ALTER TABLE grievances
-    ADD COLUMN hostel_id INT NULL;
+-- The INFORMATION_SCHEMA checks make these DDL additions safe to re-run.
 
-ALTER TABLE grievances
-    ADD INDEX idx_grievances_hostel_id (hostel_id);
+SET @hostel_id_column_exists := (
+    SELECT COUNT(*)
+    FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'grievances'
+      AND COLUMN_NAME = 'hostel_id'
+);
+SET @hostel_id_column_sql := IF(
+    @hostel_id_column_exists = 0,
+    'ALTER TABLE grievances ADD COLUMN hostel_id INT NULL',
+    'SELECT 1'
+);
+PREPARE hostel_id_column_stmt FROM @hostel_id_column_sql;
+EXECUTE hostel_id_column_stmt;
+DEALLOCATE PREPARE hostel_id_column_stmt;
 
-ALTER TABLE grievances
-    ADD CONSTRAINT fk_grievances_hostel
-    FOREIGN KEY (hostel_id) REFERENCES hostels(id)
-    ON UPDATE CASCADE ON DELETE SET NULL;
+SET @hostel_id_index_exists := (
+    SELECT COUNT(*)
+    FROM INFORMATION_SCHEMA.STATISTICS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'grievances'
+      AND INDEX_NAME = 'idx_grievances_hostel_id'
+);
+SET @hostel_id_index_sql := IF(
+    @hostel_id_index_exists = 0,
+    'ALTER TABLE grievances ADD INDEX idx_grievances_hostel_id (hostel_id)',
+    'SELECT 1'
+);
+PREPARE hostel_id_index_stmt FROM @hostel_id_index_sql;
+EXECUTE hostel_id_index_stmt;
+DEALLOCATE PREPARE hostel_id_index_stmt;
+
+SET @hostel_fk_exists := (
+    SELECT COUNT(*)
+    FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS
+    WHERE CONSTRAINT_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'grievances'
+      AND CONSTRAINT_NAME = 'fk_grievances_hostel'
+);
+SET @hostel_fk_sql := IF(
+    @hostel_fk_exists = 0,
+    'ALTER TABLE grievances ADD CONSTRAINT fk_grievances_hostel FOREIGN KEY (hostel_id) REFERENCES hostels(id) ON UPDATE CASCADE ON DELETE SET NULL',
+    'SELECT 1'
+);
+PREPARE hostel_fk_stmt FROM @hostel_fk_sql;
+EXECUTE hostel_fk_stmt;
+DEALLOCATE PREPARE hostel_fk_stmt;
 
 -- Backfill recognized existing hostel names only. Unmatched legacy free text
 -- remains in grievances.hostel for manual review.
