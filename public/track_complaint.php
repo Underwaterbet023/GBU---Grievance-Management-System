@@ -155,8 +155,8 @@ if($grievance['status'] == 'In Progress') $statusBadge = 'bg-info bg-opacity-10 
                     </div>
                     <div class="col-6 col-md-3">
                         <div class="p-3 rounded-4 bg-white bg-opacity-5 border border-white border-opacity-5">
-                            <span class="text-secondary x-small fw-bold text-uppercase d-block mb-1 tracking-widest">Protocol</span>
-                            <span class="fw-bold text-white">LEVEL <?= $grievance['current_level'] ?></span>
+                            <span class="text-secondary x-small fw-bold text-uppercase d-block mb-1 tracking-widest">Review Level</span>
+                            <span class="fw-bold text-white"><?= htmlspecialchars($grievance['current_level']) ?></span>
                         </div>
                     </div>
                 </div>
@@ -177,10 +177,10 @@ if($grievance['status'] == 'In Progress') $statusBadge = 'bg-info bg-opacity-10 
                         <div class="timeline-marker"><i class="fas fa-check"></i></div>
                         <div class="timeline-content">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h6 class="fw-bold mb-0 text-primary text-uppercase tracking-widest">Intake Success</h6>
+                                <h6 class="fw-bold mb-0 text-primary text-uppercase tracking-widest">Complaint Submitted</h6>
                                 <span class="x-small text-secondary font-monospace fw-bold"><?= date('H:i', strtotime($grievance['created_at'])) ?></span>
                             </div>
-                            <p class="text-secondary small mb-0">Complaint cryptographically signed and routed to processing nodes.</p>
+                            <p class="text-secondary small mb-0">Grievance registered and routed to the concerned department.</p>
                         </div>
                     </div>
 
@@ -200,7 +200,7 @@ if($grievance['status'] == 'In Progress') $statusBadge = 'bg-info bg-opacity-10 
                             </div>
                             <?php if($resp['status_change']): ?>
                                 <div class="px-3 py-1 bg-<?= $resp['status_change'] == 'Resolved' ? 'success' : 'info' ?> bg-opacity-10 text-<?= $resp['status_change'] == 'Resolved' ? 'success' : 'info' ?> rounded-pill d-inline-flex align-items-center gap-2 x-small fw-bold tracking-widest border border-white border-opacity-5">
-                                    <i class="fas fa-code-branch small"></i> PROTOCOL: <?= strtoupper($resp['status_change']) ?>
+                                    <i class="fas fa-code-branch small"></i> STATUS: <?= strtoupper($resp['status_change']) ?>
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -233,26 +233,26 @@ if($grievance['status'] == 'In Progress') $statusBadge = 'bg-info bg-opacity-10 
                 </div>
 
                 <div class="glass-card border-0 p-4 mb-4 shadow-lg">
-                    <h6 class="fw-bold mb-4 text-white text-uppercase tracking-widest small">Node Logistics</h6>
+                    <h6 class="fw-bold mb-4 text-white text-uppercase tracking-widest small">Grievance Summary</h6>
                     <div class="d-flex flex-column gap-4">
                         <div class="d-flex justify-content-between align-items-center border-bottom border-white border-opacity-5 pb-3">
-                            <span class="text-secondary x-small fw-bold tracking-widest">CLUSTER</span>
-                            <span class="text-white fw-bold x-small font-monospace"><?= $grievance['department'] ?? 'ROOT_LOG_NODE' ?></span>
+                            <span class="text-secondary x-small fw-bold tracking-widest">DEPARTMENT</span>
+                            <span class="text-white fw-bold x-small font-monospace"><?= htmlspecialchars($grievance['department'] ?? 'General') ?></span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center border-bottom border-white border-opacity-5 pb-3">
-                            <span class="text-secondary x-small fw-bold tracking-widest">UPTIME</span>
-                            <span class="text-white fw-bold x-small font-monospace">182 SEC_LOGS</span>
+                            <span class="text-secondary x-small fw-bold tracking-widest">SUBMITTED</span>
+                            <span class="text-white fw-bold x-small font-monospace"><?= date('M d, Y', strtotime($grievance['created_at'])) ?></span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-secondary x-small fw-bold tracking-widest">AUDITOR</span>
-                            <span class="text-white fw-bold x-small text-uppercase"><?= count($responses) > 0 ? end($responses)['admin_name'] : 'AI_DAEMON_V4' ?></span>
+                            <span class="text-secondary x-small fw-bold tracking-widest">REVIEWED BY</span>
+                            <span class="text-white fw-bold x-small text-uppercase"><?= count($responses) > 0 ? htmlspecialchars(end($responses)['admin_name']) : 'Pending Assignment' ?></span>
                         </div>
                     </div>
                 </div>
 
                 <div class="mt-4">
                     <button class="btn btn-primary d-flex align-items-center justify-content-center gap-3 w-100 py-3 rounded-pill shadow-primary border-0 hover-lift fw-bold tracking-widest" onclick="window.print()">
-                        <i class="fas fa-file-pdf"></i> GENERATE_INTEL_REPORT
+                        <i class="fas fa-file-pdf"></i> PRINT SUMMARY
                     </button>
                     <p class="text-center x-small text-secondary mt-3 tracking-tighter">PRODUCED BY ANTIGRAVITY OS CORE • SHIELD_V2.4</p>
                 </div>

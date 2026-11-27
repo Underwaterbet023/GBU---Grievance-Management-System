@@ -1,6 +1,18 @@
 <?php
 // admin_escalations_tab.php
-if (!isset($pdo)) require_once '../../includes/db.php';
+if (!isset($pdo)) require_once dirname(__DIR__, 2) . '/includes/db.php';
+
+$escCondition = "1=1";
+$escParams = [];
+if (($_SESSION['role'] ?? '') === 'Department Admin') {
+    $escCondition = "g.department = ? AND g.current_level = 'Department'";
+    $escParams[] = $_SESSION['department'];
+} elseif (($_SESSION['role'] ?? '') === 'College Admin') {
+    $escCondition = "g.department = ? AND g.current_level = 'College'";
+    $escParams[] = $_SESSION['department'];
+} elseif (($_SESSION['role'] ?? '') === 'University Admin') {
+    $escCondition = "g.current_level = 'University'";
+}
 
 // 1. Fetch overdue tickets (Critical Escalations)
 // Criteria: Pending/In Progress for > 72 hours
@@ -8,11 +20,12 @@ $escalationStmt = $pdo->prepare("
     SELECT g.*, u.name as student_name, u.email as student_email 
     FROM grievances g 
     JOIN users u ON g.user_id = u.id 
-    WHERE g.status IN ('Pending', 'In Progress') 
+    WHERE $escCondition
+    AND g.status IN ('Pending', 'In Progress') 
     AND g.created_at < DATE_SUB(NOW(), INTERVAL 3 DAY)
     ORDER BY g.created_at ASC 
 ");
-$escalationStmt->execute();
+$escalationStmt->execute($escParams);
 $escalations = $escalationStmt->fetchAll();
 
 // 2. Summary stats for the escalations tab

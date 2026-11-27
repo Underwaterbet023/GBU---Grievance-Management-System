@@ -12,7 +12,7 @@ const themeIcon = document.getElementById('themeIcon');
 
 function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('gbu-theme', theme);
+    localStorage.setItem('gbu-portal-theme', theme);
     if (themeIcon) {
         if (theme === 'light') {
             themeIcon.className = 'fas fa-moon';
@@ -26,7 +26,7 @@ function applyTheme(theme) {
 
 // Init icon state on load
 (function() {
-    const saved = localStorage.getItem('gbu-theme') || 'dark';
+    const saved = localStorage.getItem('gbu-portal-theme') || 'light';
     applyTheme(saved);
 })();
 

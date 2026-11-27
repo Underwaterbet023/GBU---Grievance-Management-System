@@ -54,15 +54,15 @@ $departments = ['Computer Science', 'Mechanical', 'Electrical', 'Civil', 'Biotec
     <!-- Header Section -->
     <div class="row mb-4 mb-md-5 align-items-center">
         <div class="col-12 col-md-7 mb-4 mb-md-0">
-            <h6 class="text-primary fw-bold text-uppercase mb-2 x-small tracking-widest">Logistical Core</h6>
-            <h2 class="display-6 fw-bold mb-0 text-white">Case Terminal</h2>
-            <p class="text-muted mb-0 small">Overview of <span class="badge bg-primary-subtle text-primary rounded-pill"><?= count($grievances) ?> Active Cases</span></p>
+            <h6 class="text-primary fw-bold text-uppercase mb-2 x-small tracking-widest">Grievance Directory</h6>
+            <h2 class="display-6 fw-bold mb-0 text-white">Manage Complaints</h2>
+            <p class="text-muted mb-0 small">Showing <span class="badge bg-primary-subtle text-primary rounded-pill"><?= count($grievances) ?> Complaints</span></p>
         </div>
         <div class="col-12 col-md-5 text-md-end">
-            <div class="input-group shadow-glow rounded-pill overflow-hidden border-0 bg-white bg-opacity-5" style="max-width: 400px; margin-left: auto;">
+            <div class="input-group shadow-glow rounded-3 overflow-hidden border bg-white bg-opacity-5" style="max-width: 400px; margin-left: auto;">
                 <span class="input-group-text bg-transparent border-0 ps-3"><i class="fas fa-search text-muted"></i></span>
                 <input type="text" id="terminalSearch" class="form-control border-0 py-2 small text-white bg-transparent" placeholder="Search ID or Subject..." value="<?= htmlspecialchars($searchFilter) ?>">
-                <button class="btn btn-primary px-4 fw-bold" onclick="handleSearch()">SYNC</button>
+                <button class="btn btn-primary px-4 fw-bold" onclick="handleSearch()">SEARCH</button>
             </div>
         </div>
     </div>

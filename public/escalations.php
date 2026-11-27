@@ -6,7 +6,7 @@ requireAnyAdmin();
 
 // Escalate action
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['escalate_id'])) {
-    $eid = (int)$_POST['escalate_id'];
+    $eid = trim($_POST['escalate_id']);
     $levels = ['Department','College','University'];
     $g = $pdo->prepare("SELECT current_level FROM grievances WHERE id=?");
     $g->execute([$eid]);
@@ -14,29 +14,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['escalate_id'])) {
     if ($row) {
         $currIdx = array_search($row['current_level'], $levels);
         $nextLevel = $levels[min($currIdx + 1, count($levels) - 1)];
-        $pdo->prepare("UPDATE grievances SET current_level=?, status='In Review', updated_at=NOW() WHERE id=?")->execute([$nextLevel, $eid]);
-        $pdo->prepare("INSERT INTO responses (grievance_id, admin_id, response, created_at) VALUES (?,?,?,NOW())")
+        $pdo->prepare("UPDATE grievances SET current_level=?, status='In Progress', updated_at=NOW() WHERE id=?")->execute([$nextLevel, $eid]);
+        $pdo->prepare("INSERT INTO responses (grievance_id, admin_id, remark, status_change, created_at) VALUES (?,?,?,'In Progress',NOW())")
             ->execute([$eid, $_SESSION['user_id'], 'Complaint escalated to '.$nextLevel.' level by Admin.']);
     }
     header('Location: escalations.php?msg=escalated');
     exit;
 }
 
-// Get overdue / escalated complaints (open for > 5 days, or priority High/Critical)
-$escalated = $pdo->query("
+// Role-based filtering
+$condition = "1=1";
+$params = [];
+if ($_SESSION['role'] === 'Department Admin') {
+    $condition = "g.department = ? AND g.current_level = 'Department'";
+    $params[] = $_SESSION['department'];
+} elseif ($_SESSION['role'] === 'College Admin') {
+    $condition = "g.department = ? AND g.current_level = 'College'";
+    $params[] = $_SESSION['department'];
+} elseif ($_SESSION['role'] === 'University Admin') {
+    $condition = "g.current_level = 'University'";
+}
+
+// Get overdue / escalated complaints (open for > 5 days, or priority High/Urgent)
+$stmtEsc = $pdo->prepare("
     SELECT g.*, u.name as student_name, u.email as student_email,
            DATEDIFF(NOW(), g.created_at) as days_open
     FROM grievances g
     JOIN users u ON u.id = g.user_id
-    WHERE g.status NOT IN ('Resolved','Closed')
+    WHERE $condition
+    AND g.status IN ('Pending', 'In Progress')
     AND (
         DATEDIFF(NOW(), g.created_at) > 5
-        OR g.priority IN ('High','Critical')
+        OR g.priority IN ('High','Urgent')
     )
     ORDER BY g.priority DESC, days_open DESC
-")->fetchAll();
+");
+$stmtEsc->execute($params);
+$escalated = $stmtEsc->fetchAll();
 
-$critical = array_filter($escalated, fn($r) => $r['priority'] === 'Critical');
+$critical = array_filter($escalated, fn($r) => $r['priority'] === 'Urgent');
 $highOld   = array_filter($escalated, fn($r) => $r['days_open'] > 10);
 ?>
 
@@ -57,8 +73,8 @@ $highOld   = array_filter($escalated, fn($r) => $r['days_open'] > 10);
          style="background:rgba(239,68,68,0.12);border-left:4px solid #ef4444!important;">
         <i class="fas fa-circle-exclamation text-danger fs-4"></i>
         <div>
-            <div class="fw-bold text-danger">Critical Alert</div>
-            <div class="text-muted small"><?= count($critical) ?> complaint(s) marked as <strong>Critical</strong> are still unresolved.</div>
+            <div class="fw-bold text-danger">Urgent Alert</div>
+            <div class="text-muted small"><?= count($critical) ?> complaint(s) marked as <strong>Urgent</strong> are still unresolved.</div>
         </div>
     </div>
     <?php endif; ?>
@@ -91,7 +107,7 @@ $highOld   = array_filter($escalated, fn($r) => $r['days_open'] > 10);
         <div class="col-md-4">
             <div class="glass-card p-4 border-0 shadow-lg text-center">
                 <div class="fs-1 fw-bold text-danger"><?= count($critical) ?></div>
-                <div class="text-muted x-small text-uppercase tracking-widest mt-1">Critical Priority</div>
+                <div class="text-muted x-small text-uppercase tracking-widest mt-1">Urgent Priority</div>
             </div>
         </div>
     </div>
@@ -106,14 +122,14 @@ $highOld   = array_filter($escalated, fn($r) => $r['days_open'] > 10);
     <?php else: ?>
     <div class="d-flex flex-column gap-4">
         <?php foreach ($escalated as $c):
-            $prioColors = ['Critical'=>'danger','High'=>'warning','Medium'=>'info','Low'=>'success'];
+            $prioColors = ['Urgent'=>'danger','High'=>'warning','Medium'=>'info','Low'=>'success'];
             $pColor = $prioColors[$c['priority']] ?? 'secondary';
             $daysOpen = $c['days_open'];
             $urgency = $daysOpen > 10 ? 'danger' : ($daysOpen > 5 ? 'warning' : 'info');
         ?>
         <div class="glass-card border-0 shadow-lg overflow-hidden">
             <!-- Color Accent Strip -->
-            <div style="height:4px;background:<?= $c['priority']==='Critical' ? 'linear-gradient(90deg,#ef4444,#f87171)' : ($c['priority']==='High' ? 'linear-gradient(90deg,#f59e0b,#fbbf24)' : 'linear-gradient(90deg,#6366f1,#818cf8)') ?>;"></div>
+            <div style="height:4px;background:<?= $c['priority']==='Urgent' ? '#dc2626' : ($c['priority']==='High' ? '#d97706' : '#800000') ?>;"></div>
             <div class="p-4 p-md-5">
                 <div class="row align-items-center g-3">
                     <!-- Info -->

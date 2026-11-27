@@ -51,28 +51,44 @@ try {
         $data->subject, 
         $data->description
     ]);
+
+    // Link hostel_id if the hostels directory migration has been applied
+    if ($result && !empty($hostel) && $hostel !== 'N/A') {
+        try {
+            $hStmt = $pdo->prepare("SELECT id FROM hostels WHERE LOWER(TRIM(hostel_name)) = LOWER(TRIM(?)) LIMIT 1");
+            $hStmt->execute([$hostel]);
+            $hostelId = $hStmt->fetchColumn();
+            if ($hostelId) {
+                $pdo->prepare("UPDATE grievances SET hostel_id = ? WHERE id = ?")->execute([$hostelId, $grievance_id]);
+            }
+        } catch (PDOException $e) {
+            // Hostels table not migrated yet; safe to ignore
+        }
+    }
     
     if ($result) {
-        // AI Webhook Notification (using @ to suppress network issues)
-        $n8n_url = "https://n8n.theasindia.com/webhook/72fa69a2-671e-450b-8dce-0490b8480396"; 
-        $payload = json_encode([
-            "id" => $grievance_id,
-            "subject" => $data->subject,
-            "description" => $data->description,
-            "priority" => $priority,
-            "category" => $category,
-            "department" => $department,
-            "user_id" => $user_id
-        ]);
+        // Optional AI Webhook Notification (configured in config/config.php)
+        $n8n_url = $config['n8n_webhook_url'] ?? '';
+        if (!empty($n8n_url) && function_exists('curl_init')) {
+            $payload = json_encode([
+                "id" => $grievance_id,
+                "subject" => $data->subject,
+                "description" => $data->description,
+                "priority" => $priority,
+                "category" => $category,
+                "department" => $department,
+                "user_id" => $user_id
+            ]);
 
-        $ch = curl_init($n8n_url);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 1); 
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-        @curl_exec($ch); 
-        curl_close($ch);
+            $ch = curl_init($n8n_url);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 1); 
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+            @curl_exec($ch); 
+            curl_close($ch);
+        }
 
         echo json_encode(['success' => true, 'message' => 'Grievance registered. ID: ' . $grievance_id, 'id' => $grievance_id]);
     } else {

@@ -29,9 +29,9 @@ if (isLoggedIn()) {
 <div class="auth-container animate__animated animate__fadeIn">
     <div class="auth-left d-none d-lg-flex">
         <div class="auth-hero-content">
-            <div class="hero-chip">VERSION 2.0 PROTOCOL</div>
-            <h1 class="display-4 fw-bold mb-4">Join the <br><span class="text-gradient">Antigravity</span> Elite.</h1>
-            <p class="lead text-white-50 mb-5">Create your operative profile to start submitting and monitoring grievances with unmatched efficiency.</p>
+            <div class="hero-chip">STUDENT REGISTRATION</div>
+            <h1 class="display-4 fw-bold mb-4">GBU Grievance <br><span class="text-gradient">Portal</span></h1>
+            <p class="lead text-white-50 mb-5">Create your student account to submit complaints and track their resolution status across university departments.</p>
             
             <div class="hero-features mt-auto">
                 <div class="d-flex align-items-center mb-4 gap-3">

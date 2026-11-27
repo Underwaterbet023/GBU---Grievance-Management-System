@@ -157,26 +157,26 @@ $grievances = $stmt->fetchAll();
             <div class="sticky-top" style="top: 2rem;">
                 <div class="glass-card p-4 border-0 shadow-lg mb-4 bg-primary bg-opacity-10 border-primary border-opacity-10">
                     <h6 class="fw-bold text-primary text-uppercase tracking-widest mb-4 d-flex align-items-center gap-3">
-                        <i class="fas fa-info-circle"></i> Protocol Brief
+                        <i class="fas fa-info-circle"></i> Grievance Guidelines
                     </h6>
                     <div class="d-flex flex-column gap-4">
                         <div class="protocol-item">
-                            <p class="text-white small fw-bold mb-1">REAL-TIME SYNC</p>
-                            <p class="text-secondary x-small mb-0">Your grievance status is synchronized across all processing nodes every 60 seconds.</p>
+                            <p class="text-white small fw-bold mb-1">STATUS UPDATES</p>
+                            <p class="text-secondary x-small mb-0">Your grievance status updates automatically whenever an admin reviews or responds to it.</p>
                         </div>
                         <div class="protocol-item">
-                            <p class="text-white small fw-bold mb-1">ESCALATION LOGIC</p>
-                            <p class="text-secondary x-small mb-0">Unresolved tickets are automatically moved to higher administration levels based on defined SLAs.</p>
+                            <p class="text-white small fw-bold mb-1">AUTO ESCALATION</p>
+                            <p class="text-secondary x-small mb-0">Unresolved complaints are escalated from Department to Dean (7 days) and Registrar (14 days).</p>
                         </div>
                         <div class="protocol-item">
-                            <p class="text-white small fw-bold mb-1">DATA INTEGRITY</p>
-                            <p class="text-secondary x-small mb-0">All interactions between you and the administration are hashed and timestamped for audit accuracy.</p>
+                            <p class="text-white small fw-bold mb-1">AUDIT TRAIL</p>
+                            <p class="text-secondary x-small mb-0">All admin remarks and status changes are timestamped and saved for transparency.</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="glass-card p-4 border-0 shadow-lg text-center bg-white bg-opacity-5">
-                    <p class="text-secondary small mb-4">Need to initiate a new resolution protocol?</p>
+                    <p class="text-secondary small mb-4">Need to file a new complaint?</p>
                     <a href="submit_complaint.php" class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-primary border-0 hover-lift tracking-widest">
                         NEW GRIEVANCE
                     </a>

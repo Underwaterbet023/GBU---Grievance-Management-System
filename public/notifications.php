@@ -41,7 +41,7 @@ if (!empty($notifications)) {
                             <div class="mb-4 d-inline-block p-4 rounded-circle bg-light">
                                 <i class="fas fa-bell-slash fa-3x text-muted opacity-50"></i>
                             </div>
-                            <h5 class="fw-bold text-dark">Zen Mode</h5>
+                            <h5 class="fw-bold text-dark">No Notifications</h5>
                             <p class="text-muted mb-0">You're all caught up! No new updates at the moment.</p>
                         </div>
                     <?php else: ?>

@@ -33,7 +33,7 @@ $grievances = $stmt->fetchAll();
                 <div class="text-truncate">
                     <div class="d-flex align-items-center gap-2 mb-0 mb-md-1 flex-wrap">
                         <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-20 x-small fw-bold px-2 py-1 rounded-pill">STUDENT</span>
-                        <span class="text-muted x-small fw-bold tracking-widest d-none d-sm-inline">NEXUS v2</span>
+                        <span class="text-muted x-small fw-bold tracking-widest d-none d-sm-inline">GBU PORTAL</span>
                     </div>
                     <h1 class="h3 fw-bold text-white mb-0 text-truncate">Welcome, <?= htmlspecialchars(explode(' ', $_SESSION['name'])[0]) ?></h1>
                 </div>
@@ -79,9 +79,9 @@ $grievances = $stmt->fetchAll();
         <div class="col-6 col-xl-3">
             <div class="card stat-card-vibrant bg-grad-cyan border-0 rounded-4 shadow-sm h-100">
                 <div class="card-body p-3 p-md-4">
-                    <i class="fas fa-shield-alt bg-icon d-none d-sm-block"></i>
-                    <h6 class="card-subtitle text-uppercase mb-1 mb-md-2 tracking-widest x-small opacity-75">Uptime</h6>
-                    <h2 class="h2 fw-bold mb-0">98%</h2>
+                    <i class="fas fa-times-circle bg-icon d-none d-sm-block"></i>
+                    <h6 class="card-subtitle text-uppercase mb-1 mb-md-2 tracking-widest x-small opacity-75">Rejected</h6>
+                    <h2 class="h2 fw-bold mb-0"><?= $stats['Rejected'] ?></h2>
                 </div>
             </div>
         </div>

@@ -258,18 +258,18 @@ $recentGrievances = $recentStmt->fetchAll();
                 </div>
                 <div class="col-xl-4">
                     <div class="glass-card p-4">
-                        <h6 class="fw-bold mb-4"><i class="fas fa-layer-group me-2 text-violet"></i>System Load</h6>
+                        <h6 class="fw-bold mb-4"><i class="fas fa-layer-group me-2 text-primary"></i>Grievance Categories</h6>
                         <div style="height: 220px; position: relative;">
                             <canvas id="categoryChartOverview"></canvas>
                         </div>
-                        <div class="mt-4 pt-4 border-top border-white border-opacity-5">
+                        <div class="mt-4 pt-4 border-top">
                             <div class="d-flex justify-content-between x-small mb-2">
-                                <span class="text-muted">Database Integrity</span>
-                                <span class="text-success fw-bold">Optimum</span>
+                                <span class="text-muted">Avg. Response Time</span>
+                                <span class="text-dark fw-bold"><?= $effStats['avgResponse'] ?> days</span>
                             </div>
                             <div class="d-flex justify-content-between x-small">
-                                <span class="text-muted">Response Health</span>
-                                <span class="text-primary fw-bold">Active</span>
+                                <span class="text-muted">Resolution Rate</span>
+                                <span class="text-success fw-bold"><?= $effStats['resRate'] ?>%</span>
                             </div>
                         </div>
                     </div>
@@ -285,9 +285,9 @@ $recentGrievances = $recentStmt->fetchAll();
                         labels: <?= json_encode(array_column($categoryData, 'category')) ?>,
                         datasets: [{
                             data: <?= json_encode(array_column($categoryData, 'count')) ?>,
-                            backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ef4444'],
+                            backgroundColor: ['#800000', '#059669', '#d97706', '#dc2626'],
                             borderWidth: 0,
-                            cutout: '80%'
+                            cutout: '70%'
                         }]
                     },
                     options: {

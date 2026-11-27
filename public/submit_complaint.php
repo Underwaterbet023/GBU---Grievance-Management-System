@@ -1,50 +1,67 @@
-<?php require_once '../includes/header.php'; ?>
+<?php
+require_once '../includes/db.php';
+require_once '../includes/header.php';
+
+// Load official GBU hostels from DB if migration has been applied
+$hostelOptions = [];
+try {
+    $hostelOptions = $pdo->query("SELECT hostel_name FROM hostels WHERE is_active = 1 ORDER BY hostel_type, hostel_name")->fetchAll(PDO::FETCH_COLUMN);
+} catch (PDOException $e) {
+    $hostelOptions = [
+        'Birsa Munda Boys Hostel',
+        'Guru Ghasi Das Boys Hostel',
+        'Sant Ravidas Boys Hostel',
+        'Rani Laxmi Bai Girls Hostel',
+        'Savitri Bai Phule Girls Hostel',
+    ];
+}
+?>
 
 <div class="container-fluid py-3 min-vh-100">
     <div class="row mb-4 mb-md-5">
         <div class="col-12">
             <div class="d-flex align-items-center gap-3 gap-md-4">
-                <div class="bg-primary bg-opacity-10 p-3 p-md-4 rounded-4 shadow-primary-sm border border-primary border-opacity-20 flex-shrink-0">
+                <div class="bg-primary bg-opacity-10 p-3 p-md-4 rounded-3 border border-primary border-opacity-20 flex-shrink-0">
                     <i class="fas fa-file-signature fa-lg fa-md-2x text-primary"></i>
                 </div>
                 <div>
-                    <h1 class="h2 h1-md fw-bold text-white mb-1">Strategic Narrative Intake</h1>
-                    <p class="text-secondary mb-0 small opacity-75 d-none d-sm-block">Record your grievance on the Immutable Network.</p>
+                    <h1 class="h2 h1-md fw-bold text-white mb-1">Submit a Grievance</h1>
+                    <p class="text-secondary mb-0 small opacity-75 d-none d-sm-block">Fill in the details below to register your complaint with the university.</p>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="row g-4">
-        <!-- Main Form Terminal -->
+        <!-- Main Form -->
         <div class="col-lg-8">
             <div class="glass-card p-4 p-md-5 border-0 shadow-lg">
-                <div id="submitAlert" class="alert d-none mb-4 animate-fade-in border-0 shadow-sm font-monospace x-small"></div>
+                <div id="submitAlert" class="alert d-none mb-4 animate-fade-in border-0 shadow-sm x-small"></div>
 
                 <form id="complaintForm" class="position-relative">
                     <div class="row g-3 g-md-4 mb-4">
                         <div class="col-md-6">
-                            <label class="form-label x-small fw-bold text-primary text-uppercase tracking-widest mb-2 mb-md-3">Operational Urgency</label>
+                            <label class="form-label x-small fw-bold text-primary text-uppercase tracking-widest mb-2 mb-md-3">Priority Level</label>
                             <div class="input-group">
-                                <span class="input-group-text border-0 bg-white bg-opacity-5 text-primary px-3 rounded-start-4"><i class="fas fa-bolt"></i></span>
-                                <select class="form-select border-0 bg-white bg-opacity-5 text-white py-2 py-md-3 px-3 rounded-end-4 x-small" id="priority" required>
-                                    <option value="Low">Alpha (Low Priority)</option>
-                                    <option value="Medium" selected>Beta (Standard Priority)</option>
-                                    <option value="High">Gamma (High Priority)</option>
-                                    <option value="Urgent">Omega (Immediate Action)</option>
+                                <span class="input-group-text border-0 bg-white bg-opacity-5 text-primary px-3"><i class="fas fa-bolt"></i></span>
+                                <select class="form-select border-0 bg-white bg-opacity-5 py-2 py-md-3 px-3 x-small" id="priority" required>
+                                    <option value="Low">Low Priority</option>
+                                    <option value="Medium" selected>Medium (Standard)</option>
+                                    <option value="High">High Priority</option>
+                                    <option value="Urgent">Urgent</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label x-small fw-bold text-primary text-uppercase tracking-widest mb-2 mb-md-3">Sector / Category</label>
+                            <label class="form-label x-small fw-bold text-primary text-uppercase tracking-widest mb-2 mb-md-3">Category</label>
                             <div class="input-group">
-                                <span class="input-group-text border-0 bg-white bg-opacity-5 text-primary px-3 rounded-start-4"><i class="fas fa-layer-group"></i></span>
-                                <select class="form-select border-0 bg-white bg-opacity-5 text-white py-2 py-md-3 px-3 rounded-end-4 x-small" id="category_hint">
-                                    <option value="Unspecified">Auto-Detecting...</option>
+                                <span class="input-group-text border-0 bg-white bg-opacity-5 text-primary px-3"><i class="fas fa-layer-group"></i></span>
+                                <select class="form-select border-0 bg-white bg-opacity-5 py-2 py-md-3 px-3 x-small" id="category_hint">
+                                    <option value="Unspecified">General</option>
                                     <option value="Academic">Academic Affairs</option>
                                     <option value="Hostel">Residential / Hostel</option>
                                     <option value="Finance">Financial Services</option>
-                                    <option value="Infrastructure">IT & Utilities</option>
+                                    <option value="Infrastructure">IT &amp; Utilities</option>
                                     <option value="Health">Medical / Wellbeing</option>
                                 </select>
                             </div>
@@ -55,31 +72,28 @@
                         <div class="col-md-6">
                             <label class="form-label x-small fw-bold text-primary text-uppercase tracking-widest mb-2 mb-md-3">Academic Department</label>
                             <div class="input-group">
-                                <span class="input-group-text border-0 bg-white bg-opacity-5 text-primary px-3 rounded-start-4"><i class="fas fa-university"></i></span>
-                                <select class="form-select border-0 bg-white bg-opacity-5 text-white py-2 py-md-3 px-3 rounded-end-4 x-small" id="department" required>
+                                <span class="input-group-text border-0 bg-white bg-opacity-5 text-primary px-3"><i class="fas fa-university"></i></span>
+                                <select class="form-select border-0 bg-white bg-opacity-5 py-2 py-md-3 px-3 x-small" id="department" required>
                                     <option value="" selected disabled>Select Department...</option>
                                     <option value="SOE">School of Engineering</option>
                                     <option value="SOM">School of Management</option>
                                     <option value="SOB">School of Biotechnology</option>
                                     <option value="SOICT">School of ICT</option>
-                                    <option value="SOLJ">School of Law & Justice</option>
+                                    <option value="SOLJ">School of Law &amp; Justice</option>
                                     <option value="SOVS">School of Vocational Studies</option>
-                                    <option value="SOHSS">School of Humanities & Social Sciences</option>
+                                    <option value="SOHSS">School of Humanities &amp; Social Sciences</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label x-small fw-bold text-primary text-uppercase tracking-widest mb-2 mb-md-3">Residential Hostel</label>
                             <div class="input-group">
-                                <span class="input-group-text border-0 bg-white bg-opacity-5 text-primary px-3 rounded-start-4"><i class="fas fa-hotel"></i></span>
-                                <select class="form-select border-0 bg-white bg-opacity-5 text-white py-2 py-md-3 px-3 rounded-end-4 x-small" id="hostel" required>
+                                <span class="input-group-text border-0 bg-white bg-opacity-5 text-primary px-3"><i class="fas fa-hotel"></i></span>
+                                <select class="form-select border-0 bg-white bg-opacity-5 py-2 py-md-3 px-3 x-small" id="hostel" required>
                                     <option value="" selected disabled>Select Hostel...</option>
-                                    <option value="Tansen">Tansen Hostel</option>
-                                    <option value="Birsa Munda">Birsa Munda Hostel</option>
-                                    <option value="Guru Ghasidas">Guru Ghasidas Hostel</option>
-                                    <option value="Sant Ravidas">Sant Ravidas Hostel</option>
-                                    <option value="Rani Laxmi Bai">Rani Laxmi Bai Hostel</option>
-                                    <option value="Dayawati">Dayawati Hostel</option>
+                                    <?php foreach ($hostelOptions as $hName): ?>
+                                        <option value="<?= htmlspecialchars($hName) ?>"><?= htmlspecialchars($hName) ?></option>
+                                    <?php endforeach; ?>
                                     <option value="N/A">Day Scholar / Other</option>
                                 </select>
                             </div>
@@ -87,7 +101,7 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label x-small fw-bold text-primary text-uppercase tracking-widest mb-2 mb-md-3">Narrative Identifier (Subject)</label>
+                        <label class="form-label x-small fw-bold text-primary text-uppercase tracking-widest mb-2 mb-md-3">Subject</label>
                         <input type="text" class="form-control border-0 bg-white bg-opacity-5 text-white py-2 py-md-3 px-4 rounded-4" id="subject" placeholder="Concise summary..." required>
                     </div>
 
@@ -109,14 +123,14 @@
             </div>
         </div>
 
-        <!-- System Protocols Sidebar -->
+        <!-- Submission Guidelines Sidebar -->
         <div class="col-lg-4">
             <div class="glass-card p-4 mb-4 border-0">
-                <h6 class="text-primary x-small fw-bold text-uppercase tracking-widest mb-4">Submission Protocols</h6>
+                <h6 class="text-primary x-small fw-bold text-uppercase tracking-widest mb-4">Submission Guidelines</h6>
                 <div class="d-flex flex-column gap-3">
                     <div class="p-3 bg-white bg-opacity-5 rounded-4 border-start border-4 border-primary">
-                        <span class="d-block x-small fw-bold text-white text-uppercase tracking-widest mb-1">Data Immutability</span>
-                        <p class="text-secondary small mb-0">Once submitted, this record cannot be altered or deleted from the network logs.</p>
+                        <span class="d-block x-small fw-bold text-white text-uppercase tracking-widest mb-1">Accurate Details</span>
+                        <p class="text-secondary small mb-0">Provide a clear subject and description so your department can act quickly.</p>
                     </div>
                     <div class="p-3 bg-white bg-opacity-5 rounded-4 border-start border-4 border-warning">
                         <span class="d-block x-small fw-bold text-white text-uppercase tracking-widest mb-1">Automatic Routing</span>
