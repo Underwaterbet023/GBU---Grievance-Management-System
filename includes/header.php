@@ -10,7 +10,7 @@ $pageTitle = $pageTitle ?? 'Dashboard';
 $currentPage = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,7 +32,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     <script>
         // Apply theme BEFORE render to avoid flash
         (function() {
-            const saved = localStorage.getItem('gbu-theme') || 'dark';
+            const saved = localStorage.getItem('gbu-portal-theme') || 'light';
             document.documentElement.setAttribute('data-theme', saved);
         })();
 

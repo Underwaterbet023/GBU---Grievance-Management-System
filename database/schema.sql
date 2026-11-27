@@ -12,6 +12,9 @@ CREATE TABLE IF NOT EXISTS users (
     role ENUM('Student', 'Main Admin', 'Department Admin', 'College Admin', 'University Admin') DEFAULT 'Student',
     department VARCHAR(100) DEFAULT NULL, -- E.g. 'Engineering', 'Biotechnology'
     hostel VARCHAR(100) DEFAULT NULL,     -- E.g. 'Birsa Munda'
+    is_active TINYINT(1) DEFAULT 1,
+    last_login_at DATETIME DEFAULT NULL,
+    last_action_at DATETIME DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -67,15 +70,26 @@ CREATE TABLE IF NOT EXISTS escalation_logs (
     FOREIGN KEY (grievance_id) REFERENCES grievances(id) ON DELETE CASCADE
 );
 
+-- 6. Activity Logs
+CREATE TABLE IF NOT EXISTS activity_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    action VARCHAR(255) NOT NULL,
+    context TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX (user_id),
+    INDEX (created_at)
+);
+
 -- Insert Dummy Users
--- Student: password is 'password123' -> $2y$10$wT/pItv7wPZ68sD/q56f6u4C/n5gqB9Y92ASt4n4fX9gS9F1r9yE6
+-- Student: password is 'password123' -> $2y$10$BoJjr3fCjY3pkP1DXLV02u.T5n7pe9ao9SICnre5AEWL6r1uWtpRC
 INSERT INTO users (roll_number, name, email, password_hash, role, department, hostel) VALUES 
-('21CSU001', 'John Doe', 'john@gbu.ac.in', '$2y$10$wT/pItv7wPZ68sD/q56f6u4C/n5gqB9Y92ASt4n4fX9gS9F1r9yE6', 'Student', 'Engineering', 'Birsa Munda'),
-(NULL, 'HOD Engineering', 'hod.eng@gbu.ac.in', '$2y$10$wT/pItv7wPZ68sD/q56f6u4C/n5gqB9Y92ASt4n4fX9gS9F1r9yE6', 'Department Admin', 'Engineering', NULL),
-(NULL, 'Dean Engineering', 'dean.eng@gbu.ac.in', '$2y$10$wT/pItv7wPZ68sD/q56f6u4C/n5gqB9Y92ASt4n4fX9gS9F1r9yE6', 'College Admin', 'Engineering', NULL),
-(NULL, 'Registrar', 'registrar@gbu.ac.in', '$2y$10$wT/pItv7wPZ68sD/q56f6u4C/n5gqB9Y92ASt4n4fX9gS9F1r9yE6', 'University Admin', NULL, NULL),
-(NULL, 'Main Admin', 'admin@gbu.ac.in', '$2y$10$wT/pItv7wPZ68sD/q56f6u4C/n5gqB9Y92ASt4n4fX9gS9F1r9yE6', 'Main Admin', NULL, NULL);
+('23ICS014', 'Aarav Sharma', 'aarav.sharma@gbu.ac.in', '$2y$10$BoJjr3fCjY3pkP1DXLV02u.T5n7pe9ao9SICnre5AEWL6r1uWtpRC', 'Student', 'Engineering', 'Birsa Munda Boys Hostel'),
+(NULL, 'HOD Engineering', 'hod.eng@gbu.ac.in', '$2y$10$BoJjr3fCjY3pkP1DXLV02u.T5n7pe9ao9SICnre5AEWL6r1uWtpRC', 'Department Admin', 'Engineering', NULL),
+(NULL, 'Dean Engineering', 'dean.eng@gbu.ac.in', '$2y$10$BoJjr3fCjY3pkP1DXLV02u.T5n7pe9ao9SICnre5AEWL6r1uWtpRC', 'College Admin', 'Engineering', NULL),
+(NULL, 'Registrar', 'registrar@gbu.ac.in', '$2y$10$BoJjr3fCjY3pkP1DXLV02u.T5n7pe9ao9SICnre5AEWL6r1uWtpRC', 'University Admin', NULL, NULL),
+(NULL, 'Main Admin', 'admin@gbu.ac.in', '$2y$10$BoJjr3fCjY3pkP1DXLV02u.T5n7pe9ao9SICnre5AEWL6r1uWtpRC', 'Main Admin', NULL, NULL);
 
 -- Insert Dummy Grievance
-INSERT INTO grievances (id, user_id, category, department, priority, subject, description, status) VALUES 
-('GBU-2024-001', 1, 'Academic', 'Engineering', 'High', 'Issue with Lab Equipment', 'The computers in the AI lab are not working properly. Some systems are not turning on.', 'Pending');
+INSERT INTO grievances (id, user_id, category, department, priority, subject, description, status, created_at) VALUES 
+('GBU-2026-0001', 1, 'Academic', 'Engineering', 'High', 'Issue with Lab Equipment', 'The computers in the AI lab are not working properly. Some systems are not turning on.', 'Pending', '2026-11-20 10:30:00');

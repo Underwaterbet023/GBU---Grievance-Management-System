@@ -15,6 +15,9 @@ try {
     foreach ($deptGrievances as $g) {
         $updateStmt = $pdo->prepare("UPDATE grievances SET current_level = 'College', priority = 'High' WHERE id = ?");
         $updateStmt->execute([$g['id']]);
+
+        $logStmt = $pdo->prepare("INSERT INTO escalation_logs (grievance_id, escalated_from, escalated_to) VALUES (?, 'Department', 'College')");
+        $logStmt->execute([$g['id']]);
         
         $notif = $pdo->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
         $notif->execute([$g['user_id'], "Automated Update: Your grievance ({$g['id']}) has been escalated to College level as no action was taken at the Department level for 7 days."]);
@@ -28,6 +31,9 @@ try {
     foreach ($collegeGrievances as $g) {
         $updateCollegeStmt = $pdo->prepare("UPDATE grievances SET current_level = 'University', priority = 'Urgent' WHERE id = ?");
         $updateCollegeStmt->execute([$g['id']]);
+
+        $logStmt = $pdo->prepare("INSERT INTO escalation_logs (grievance_id, escalated_from, escalated_to) VALUES (?, 'College', 'University')");
+        $logStmt->execute([$g['id']]);
         
         $notif = $pdo->prepare("INSERT INTO notifications (user_id, message) VALUES (?, ?)");
         $notif->execute([$g['user_id'], "Automated Update: Your grievance ({$g['id']}) has been escalated to University level (Final Level) due to further delay."]);

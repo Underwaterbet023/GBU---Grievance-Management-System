@@ -23,19 +23,22 @@ function requireRole($role) {
     }
 }
 
-// Check for any type of admin - Restrict to specific authorized personnel
+// Check for any admin role
 function isAdmin() {
-    $authorizedEmails = [
-        'Dean55gbu@gbu.ac.in',
-        'Registar25gbu@gbu.ac.in',
-        'admin5525gbu@gbu.ac.in'
-    ];
-    
+    if (!isLoggedIn()) {
+        return false;
+    }
+
     $adminRoles = ['Main Admin', 'Department Admin', 'College Admin', 'University Admin'];
-    $hasRole = isset($_SESSION['role']) && in_array($_SESSION['role'], $adminRoles);
-    $hasEmail = isset($_SESSION['email']) && in_array($_SESSION['email'], $authorizedEmails);
-    
-    return $hasRole && $hasEmail;
+    return isset($_SESSION['role']) && in_array($_SESSION['role'], $adminRoles, true);
+}
+
+// Safely append a query parameter when redirecting back to a referring page
+function redirectBackWithParam($fallbackUrl, $key, $value) {
+    $target = $_SERVER['HTTP_REFERER'] ?? $fallbackUrl;
+    $separator = (strpos($target, '?') !== false) ? '&' : '?';
+    header("Location: {$target}{$separator}" . urlencode($key) . '=' . urlencode($value));
+    exit();
 }
 
 function requireAnyAdmin() {

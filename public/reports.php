@@ -35,7 +35,7 @@ $statuses = $pdo->query("SELECT status, COUNT(*) as cnt FROM grievances GROUP BY
     <div class="d-flex align-items-center justify-content-between mb-4 mb-md-5 flex-wrap gap-3">
         <div>
             <h2 class="fw-bold text-white mb-1 h3 h2-md" style="letter-spacing:-0.5px;">
-                <i class="fas fa-chart-bar text-primary me-2 me-md-3"></i>Analytics Core
+                <i class="fas fa-chart-bar text-primary me-2 me-md-3"></i>Grievance Reports
             </h2>
             <p class="text-muted x-small mb-0 opacity-75">Comprehensive insights across all grievance records.</p>
         </div>
@@ -76,7 +76,7 @@ $statuses = $pdo->query("SELECT status, COUNT(*) as cnt FROM grievances GROUP BY
         <div class="col-xl-8">
             <div class="glass-card p-4 border-0 shadow-lg h-100">
                 <h6 class="fw-bold text-white mb-4 x-small text-uppercase tracking-widest">
-                    <i class="fas fa-chart-line text-primary me-2"></i>Grievance Velocity
+                    <i class="fas fa-chart-line text-primary me-2"></i>Monthly Trend
                 </h6>
                 <div class="chart-container-responsive" style="height: 250px;">
                     <canvas id="monthlyChart"></canvas>
